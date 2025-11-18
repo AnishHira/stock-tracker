@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Stock Information</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+
+    <style>
+        input {
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                backdrop-filter: blur(10px);
+                border-radius: 10px;
+                padding: 10px;
+                color: white;
+                border-width: 3px;
+                font-family: "Red Hat Display", sans-serif;
+                margin-right: 2px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            input:hover {
+                background: rgba(255, 255, 255, 0.15);
+            }
+
+            input:active {
+                background: rgba(255, 255, 255, 0.3);
+            }
+
+            .search-btn {
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                backdrop-filter: blur(10px);
+                border-radius: 10px;
+                padding: 10px;
+                color: white;
+                border-width: 3px;
+                margin-right: 10px;
+                font-family: "Red Hat Display", sans-serif;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .search-btn:hover {
+                background: rgba(255, 255, 255, 0.15);
+
+            }
+
+            .search-btn:active {
+                background: rgba(255, 255, 255, 0.3);
+            }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: radial-gradient(circle at center, #282828 0%, #1b1b1b 100%);
+            background-repeat: no-repeat;
+            background-size: cover;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;  
+            align-items: center;    
+        }
+
+        h1 { 
+            margin-top: 0px;
+            font-family: "Red Hat Display", sans-serif;
+            font-weight: 700;
+            color: rgb(235, 235, 235);
+            font-size: 50px;
+        }
+
+        p { 
+            font-family: "Red Hat Display", sans-serif;
+            font-weight: 500;
+            color: rgb(235, 235, 235);
+            font-size: 15px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <h1>Stock Tracker</h1>
+    <form method="POST">
+        <div>
+            <input type="text" name="ticker" placeholder="Enter a Stock Ticker/Code: e.g. AAPL" required style="width: 300px;">
+            <button class="search-btn" type="submit">Search</button>
+        </div>
+    </form>
+    
+    {% if error %} 
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+
+        <style>
+            * {
+                text-decoration: none;
+            }
+
+            body {
+                margin: 0;
+                min-height: 100vh;
+                background: radial-gradient(circle at center, #282828 0%, #1b1b1b 100%);
+                background-repeat: no-repeat;
+                background-size: cover;
+
+                display: flex;
+                flex-direction: column;
+                justify-content: center;  
+                align-items: center;    
+            }
+
+            input {
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                backdrop-filter: blur(10px);
+                border-radius: 10px;
+                padding: 7px;
+                color: white;
+                border-width: 3px;
+                font-family: "Red Hat Display", sans-serif;
+                margin-right: 2px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .search-btn {
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                backdrop-filter: blur(10px);
+                border-radius: 10px;
+                padding: 7px;
+                color: white;
+                border-width: 3px;
+                margin-right: 10px;
+                font-family: "Red Hat Display", sans-serif;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            input:hover {
+                background: rgba(255, 255, 255, 0.15);
+            }
+            
+            input:active {
+                background: rgba(255, 255, 255, 0.15);
+            }
+
+
+            .search-btn:hover {
+                background: rgba(255, 255, 255, 0.15);
+            }
+            
+            .search-btn:active {
+                background: rgba(255, 255, 255, 0.3);
+            }
+
+            .navbar {
+                background: rgba(56, 56, 56, 0.1);
+                width: 100%;
+                padding: 20px 10px;
+                box-sizing: border-box;
+            }
+
+            .navdiv {
+                display: flex; 
+                align-items: center; 
+                justify-content: space-between;
+            }
+
+            .logo a {
+                font-family: "Red Hat Display", sans-serif;
+                font-size: 30px;
+                font-weight: 700;
+                color: rgb(235, 235, 235);
+                text-decoration: none;
+            }
+
+            h1 {
+                font-family: "Red Hat Display", sans-serif;
+                font-weight: 800;
+                color: rgb(235, 235, 235);
+                font-size: 45px;
+                line-height: 1;
+                margin-top: 35px;
+                margin-bottom: 0;
+                margin-left: 20px;
+            }
+
+            h2 { 
+                font-family: "Red Hat Display", sans-serif;
+                font-weight: 600;
+                color: rgb(235, 235, 235);
+                font-size: 20px;
+                margin-left: 20px;
+            }
+
+            .range-buttons {
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                backdrop-filter: blur(10px);
+                border-radius: 10px;
+                padding: 8px 15px;
+                color: white;
+                border-width: 3px;
+                margin-right: 10px;
+                font-family: "Red Hat Display", sans-serif;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+
+            .range-buttons:hover {
+                background: rgba(255, 255, 255, 0.15);
+            }
+
+            .range-buttons:active {
+                background: rgba(255, 255, 255, 0.3);
+            }
+
+            #plot-div {
+                width: 900px;
+                min-height: 450px; 
+                margin-right: 20px;
+                position: relative; /* Needed for absolute positioning of loader */
+            }
+
+            /* New style for the loading message */
+            #chart-loading-message {
+                position: absolute; /* Position over the chart div */
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                color: white;
+                text-align: center;
+                padding: 20px;
+                font-family: "Red Hat Display", sans-serif;
+                font-size: 1.2em;
+                z-index: 10; /* Ensure it's above the chart */
+                display: none; /* Hidden by default */
+            }
+
+            /* Style for error messages */
+            .error-message {
+                color: red;
+                text-align: center;
+                padding: 20px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <nav class="navbar">
+            <div class="navdiv">
+                <div class="logo"><a href="/">Stock Tracker</a></div>
+                <form class="search_bar_and_button" action="/" method="POST">
+                    <input type="text" name="ticker" placeholder="Enter a Stock Ticker/Code: e.g. AAPL" required style="width: 300px;">
+                    <button class="search-btn" type="submit">Search</button>
+                </form>
+            </div>
+        </nav>
+
+        <div>
+            <h1>{{ company_name }} ({{ ticker }})</h1>
+            <h2>Current Price: ${{ current_price }} USD per share</h2>
+
+            <input type="hidden" id="ticker-value" value="{{ ticker }}">
+
+            <div class="button-group" style="margin-left: 20px; margin-top: 30px;">
+                <button type="button" class="range-buttons" onclick="switchChart('1d')">1D</button>
+                <button type="button" class="range-buttons" onclick="switchChart('5d')">5D</button>
+                <button type="button" class="range-buttons" onclick="switchChart('1mo')">1M</button>
+                <button type="button" class="range-buttons" onclick="switchChart('6mo')">6M</button>
+                <button type="button" class="range-buttons" onclick="switchChart('1y')">1Y</button>
+                <button type="button" class="range-buttons" onclick="switchChart('5y')">5Y</button>
+            </div>
+
+            <div id="plot-div" style="margin-left: 20px; margin-top: 30px;">
+                </div>
+            <p id="chart-loading-message" style="margin-left: 20px;">Loading chart...</p>
+        </div>
+
+        <script>
+            function switchChart(range) {
+                var ticker = document.getElementById('ticker-value').value;
+                const plotDiv = document.getElementById('plot-div');
+                const loadingMessage = document.getElementById('chart-loading-message'); // Get the dedicated loading message element
+
+                // 1. Show loading message and clear previous plot/errors
+                if (loadingMessage) {
+                    loadingMessage.style.display = 'block'; // Make loading message visible
+                }
+                Plotly.purge(plotDiv); // Clear any existing Plotly graph
+                plotDiv.innerHTML = ''; // Clear any other content (like previous error messages)
+                
+                fetch('/switch_chart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `ticker=${encodeURIComponent(ticker)}&range=${encodeURIComponent(range)}`
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { 
+                            throw new Error(err.error || 'Network response was not ok'); 
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.graph_json) {
+                        const figure = JSON.parse(data.graph_json);
+                        Plotly.newPlot(plotDiv, figure.data, figure.layout, {responsive: true});
+                    } else {
+                        throw new Error('Invalid chart data received from server. Expected "graph_json" field.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Display error message directly in the plotDiv
+                    plotDiv.innerHTML = 
+                        `<p class="error-message">Error loading chart: ${error.message}</p>`;
+                })
+                .finally(() => {
+                    // 2. Hide loading message regardless of success or failure
+                    if (loadingMessage) {
+                        loadingMessage.style.display = 'none'; // Hide the loading message
+                    }
+                });
+            }
+
+            // Load the 1D chart by default when the page finishes loading
+            document.addEventListener('DOMContentLoaded', function() {
+                switchChart('1d'); 
+            });
+        </script>
+    </body>
+</html>
