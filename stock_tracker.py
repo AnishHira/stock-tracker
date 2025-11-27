@@ -18,15 +18,19 @@ def home():
         ticker_input = request.form.get('ticker', '').upper()
         try:
             ticker = yf.Ticker(ticker_input)
-            info = ticker.info
-            company_name = info.get('shortName')
-            current_price = info.get('currentPrice')
-
-            if not company_name or not current_price:
-                error = f"Could not find valid data for ticker '{ticker_input}'."
-                return render_template('index.html', error=error)
             
-            return render_template('information.html', company_name=company_name, current_price=current_price, ticker=ticker_input)
+            history = ticker.history(period="1d")
+
+            if history.empty:
+                error = f"No price data found for ticker '{ticker_input}'."
+                return render_template('index.html', error=error)
+
+            current_price = history['Close'].iloc[-1]
+
+            info = ticker.info
+            company_name = (info.get('longName') or info.get('shortName') or info.get('name') or ticker_input)
+
+            return render_template('information.html', company_name=company_name, current_price=f"{current_price:.2f}", ticker=ticker_input)
 
         except Exception as e:
             error = f"Error retrieving data for '{ticker_input}'. Please check the ticker symbol. ({e})"
