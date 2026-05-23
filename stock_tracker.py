@@ -4,6 +4,7 @@ import plotly.graph_objs as go
 import json
 from plotly.utils import PlotlyJSONEncoder
 import pandas as pd
+import pytz
 
 tracker = Flask(__name__)
 
@@ -73,6 +74,10 @@ def switch_chart():
                 data.columns = ['Close']
             else:
                 raise ValueError("Could not find 'Close' column after flattening MultiIndex.")
+        
+        if interval in ["1m", "5m", "30m", "1h"]:
+            et = pytz.timezone('US/Eastern')
+            data.index = data.index.tz_convert(et)
 
         if data.empty:
             return jsonify({'error': f'No data available for {ticker} in the {time_range.upper()} range.'}), 404
@@ -124,7 +129,7 @@ def switch_chart():
         if interval in ["1m", "5m","30m", "1h"]:
             layout_settings['xaxis']['rangebreaks'] = [
                 dict(bounds=["sat", "mon"]),  # Hide weekends
-                dict(bounds=[20, 13.5], pattern="hour"), # Hide 4 PM ET (20:00 UTC) to 9:30 AM ET (13:30 UTC)
+                dict(bounds=[16, 9.5], pattern="hour"), # ET time now
             ]
 
         fig.update_layout(layout_settings)
