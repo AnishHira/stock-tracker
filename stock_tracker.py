@@ -100,7 +100,7 @@ def switch_chart():
         layout_settings = {
             'title': f'<b>{ticker}</b> - Close Price ({time_range.upper()})',
             'title_x': 0.01,
-            'xaxis_title': 'Date',
+            'xaxis_title': 'Date / Time (ET)',
             'yaxis_title': 'Price (USD)',
             'height': 450,
             'margin': dict(l=20, r=80, t=40, b=60),
